@@ -8,6 +8,7 @@ public partial class Dashboard : Form
     public Dashboard()
     {
         InitializeComponent();
+        httpVerbSelection.SelectedItem = "GET";
     }
 
     private async void callApi_Click(object sender, EventArgs e)
@@ -22,10 +23,19 @@ public partial class Dashboard : Form
             return;
         }
 
+        HttpAction action;
+        if (Enum.TryParse(httpVerbSelection.SelectedItem!.ToString(), out action) == false)
+        {
+            systemStatus.Text = "Invalid HTTP Verb";
+            return;
+        }
+
         try
         {
 
-            resultText.Text = await api.CallApiAsync(apiText.Text);
+            resultText.Text = await api.CallApiAsync(apiText.Text, bodyText.Text, action);
+            callData.SelectedTab = resultTab;
+            resultTab.Focus();
 
             systemStatus.Text = "Ready";
         }
